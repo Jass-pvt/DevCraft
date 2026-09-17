@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { createApp } from "./app";
 import { env } from "./config/env";
 import { logger } from "./utils/logger";
-import { testEmailConnection } from "./services/email.service";
 
 async function start() {
   try {
@@ -12,9 +11,6 @@ async function start() {
     });
 
     logger.info("Connected to MongoDB");
-
-    // Test email connection on startup
-    await testEmailConnection();
 
     const app = createApp();
 
