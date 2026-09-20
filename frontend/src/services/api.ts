@@ -1,6 +1,10 @@
 import type { ContactFormData } from "@/types";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+// Base API URL defaulting to local development server
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+// Ensure URL always points correctly to /api/contact without duplicate slashes
+const CONTACT_ENDPOINT = `${API_BASE.replace(/\/api\/?$/, "")}/api/contact`;
 
 export class ApiError extends Error {
   status: number;
@@ -19,7 +23,7 @@ export async function submitContactEnquiry(data: ContactFormData): Promise<{ mes
   const timeoutId = setTimeout(() => controller.abort(), 10000);
 
   try {
-    response = await fetch(`${API_URL}/contact`, {
+    response = await fetch(CONTACT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -38,7 +42,7 @@ export async function submitContactEnquiry(data: ContactFormData): Promise<{ mes
   try {
     payload = await response.json();
   } catch {
-    // no-op: some error responses may not have a JSON body
+    // no-op: handles non-JSON responses gracefully
   }
 
   if (!response.ok) {
