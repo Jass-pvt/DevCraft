@@ -1,8 +1,10 @@
+
 import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import mongoSanitize from "express-mongo-sanitize";
+
 import apiRoutes from "./routes";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { env } from "./config/env";
@@ -12,14 +14,20 @@ export function createApp(): Application {
 
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
-  app.use(helmet());
+
+  // Remove any accidental trailing slash from the configured frontend URL.
+  const corsOrigin = env.corsOrigin.replace(/\/$/, "");
+
   app.use(
     cors({
-      origin: env.corsOrigin,
-      methods: ["GET", "POST"],
+      origin: corsOrigin,
+      methods: ["GET", "POST", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
+
   app.use(express.json({ limit: "20kb" }));
+
   app.use(mongoSanitize());
 
   if (env.nodeEnv !== "test") {
