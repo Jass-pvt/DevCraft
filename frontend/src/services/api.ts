@@ -1,15 +1,8 @@
 import type { ContactFormData } from "@/types";
 
-// Production API URL comes from Vercel's VITE_API_URL environment variable.
-// Example:
+const API_BASE =
+  import.meta.env.VITE_API_URL || "https://devcraft-backend-z0qk.onrender.com";
 
-const API_BASE = import.meta.env.VITE_API_URL;
-
-if (!API_BASE) {
-  throw new Error("VITE_API_URL is not configured.");
-}
-
-// Prevent duplicate /api when the environment variable accidentally includes it.
 const CONTACT_ENDPOINT = `${API_BASE.replace(/\/api\/?$/, "")}/api/contact`;
 
 export class ApiError extends Error {
@@ -68,7 +61,7 @@ export async function submitContactEnquiry(
   try {
     payload = await response.json();
   } catch {
-    // Handles non-JSON responses gracefully.
+    // Non-JSON response.
   }
 
   if (!response.ok) {
@@ -95,4 +88,3 @@ export async function submitContactEnquiry(
 
   return payload;
 }
-
